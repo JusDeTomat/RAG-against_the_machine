@@ -12,10 +12,6 @@ from src.search_file import take_all_files_paths
 
 
 def tokenize(text: str) -> list[str]:
-    """Découpe un texte en tokens, en séparant aussi snake_case et camelCase.
-
-    "max_chunk_size" donne : max_chunk_size, max, chunk, size
-    """
     tokens: list[str] = []
     for word in re.findall(r"[A-Za-z_][A-Za-z0-9_]*|\d+", text):
         tokens.append(word.lower())
@@ -29,7 +25,6 @@ def tokenize(text: str) -> list[str]:
 def index(max_chunk_size: int = 2000,
           raw_dir: str = "data/raw",
           output_dir: str = "data/processed") -> None:
-    """Chunke le corpus, construit l'index BM25 et le sauvegarde."""
     if not Path(raw_dir).is_dir():
         print(f"Error: folder not found: {raw_dir}")
         return
