@@ -45,7 +45,7 @@ def index(max_chunk_size: int = 2000,
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     with open(out / "chunks.json", "w", encoding="utf-8") as f:
-        json.dump(chunks, f)
+        json.dump(chunks, f, indent="\t")
     with open(out / "bm25.pkl", "wb") as f:
         pickle.dump(bm25, f)
     print(f"Ingestion complete! Indexed {len(chunks)} chunks under {out}/")
