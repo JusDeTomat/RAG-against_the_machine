@@ -18,6 +18,7 @@ install:
 
 run:
 	uv run python -m src index --max_chunk_size 2000
+	uv run python -m src answer "How to configure the OpenAI server?" --k 5
 
 lint: install
 	uv run $(FLAKE) $(SRC_DIR) --exclude $(VENV)

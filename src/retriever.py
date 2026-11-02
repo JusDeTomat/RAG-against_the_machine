@@ -16,7 +16,7 @@ class Retriever:
         with open(folder / "chunks.json", encoding="utf-8") as f:
             self.chunks: list[dict[str, Any]] = json.load(f)
         with open(folder / "bm25.pkl", "rb") as f:
-            self.bm25 = json.load(f)
+            self.bm25 = pickle.load(f)
 
     def search(self, query: str, k: int = 10) -> list[MinimalSource]:
         tokens = tokenize(query)

@@ -24,7 +24,9 @@ def tokenize(text: str) -> list[str]:
 
 def index(max_chunk_size: int = 2000,
           raw_dir: str = "data/raw",
-          output_dir: str = "data/processed") -> None:
+          output_dir: str = "data/processed",
+          k1: float = 1.5,
+          b: float = 0.75) -> None:
     if not Path(raw_dir).is_dir():
         print(f"Error: folder not found: {raw_dir}")
         return
@@ -38,14 +40,20 @@ def index(max_chunk_size: int = 2000,
     chunks: list[dict[str, Any]] = []
     for file in tqdm(take_all_files_paths(raw_dir), desc="Chunking"):
         chunks.extend(chunker.create_chunk(file))
-
-    tokenized = [tokenize(c["text"]) for c in tqdm(chunks, desc="Tokenizing")]
-    bm25 = BM25Okapi(tokenized)
+    tokenized = [
+        tokenize(c["file_path"]) + tokenize(c["text"])
+        for c in tqdm(chunks, desc="Tokenizing")
+    ]
+    bm25 = BM25Okapi(tokenized, k1=k1, b=b)
 
     out = Path(output_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    with open(out / "chunks.json", "w", encoding="utf-8") as f:
-        json.dump(chunks, f, indent="\t")
-    with open(out / "bm25.pkl", "wb") as f:
-        pickle.dump(bm25, f)
+    try:
+        out.mkdir(parents=True, exist_ok=True)
+        with open(out / "chunks.json", "w", encoding="utf-8") as f:
+            json.dump(chunks, f)
+        with open(out / "bm25.pkl", "wb") as f:
+            pickle.dump(bm25, f)
+    except OSError as e:
+        print(f"Error: cannot write the index ({e})")
+        return
     print(f"Ingestion complete! Indexed {len(chunks)} chunks under {out}/")
