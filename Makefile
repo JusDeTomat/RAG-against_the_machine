@@ -1,44 +1,39 @@
-VENV        = .venv
+SRCS_DIR = src
+UV_PY = uv run
 
-SRC_DIR     = src
-MAIN        = $(SRC_DIR)/main.py
-
-FLAKE = flake8
-MYPY  = mypy
-
-MYPY_FLAGS = \
-	--warn-return-any           \
-	--warn-unused-ignores       \
-	--ignore-missing-imports    \
-	--disallow-untyped-defs     \
-	--check-untyped-defs
+MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 install:
-	uv sync
+	@export HF_HOME=/sgoinfre/mbichet/hf
+	uv sync --cache-dir ~/goinfre/.uv_cache 
+
+install-dataset:
+	@mkdir -p data/raw
+	@unzip vllm-0.10.1.zip -d data/raw
+	@echo "vllm-0.10.1.zip extracted to data/raw/vllm-0.10.1"
 
 run:
-	uv run python -m src index --max_chunk_size 2000
-	uv run python -m src answer "How to configure the OpenAI server?" --k 5
+	@$(UV_PY) -m src $(ARGS)
 
-lint: install
-	uv run $(FLAKE) $(SRC_DIR) --exclude $(VENV)
-	uv run $(MYPY) $(SRC_DIR) $(MYPY_FLAGS)
-
-lint-strict: install
-	uv run $(FLAKE) $(SRC_DIR) --exclude $(VENV)
-	uv run $(MYPY) $(SRC_DIR) --strict
-
-debug: install
-	uv run -m pdb $(MAIN)
-
+debug:
+	@$(UV_PY) -m src -v $(ARGS)
 
 clean:
-	uv clean
-	rm -rf $(VENV)
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	rm -rf __pycache__ .mypy_cache .pytest_cache
+	rm -rf data/processed
+	rm -rf data/output
 
-clean-package:
-	rm -rf build dist
+fclean: clean
+	rm -rf .venv
 
-.PHONY: install run debug package test lint lint-strict profiler clean clean-package
+lint:
+	$(UV_PY) flake8 $(SRCS_DIR)
+	$(UV_PY) mypy $(SRCS_DIR) $(MYPY_FLAGS)
+
+lint-strict:
+	$(UV_PY) flake8 $(SRCS_DIR)
+	$(UV_PY) mypy $(SRCS_DIR) --strict
+
+.PHONY: install run debug clean fclean lint lint-strict install-dataset

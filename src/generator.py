@@ -112,6 +112,7 @@ def answer(query: str, k: int = 5,
     except (OSError, RuntimeError, ValueError) as e:
         print(f"Error: generation failed ({e})")
         return
+    print("\nAnswer:")
     print(text)
     print("\nSources:")
     for s in sources:
