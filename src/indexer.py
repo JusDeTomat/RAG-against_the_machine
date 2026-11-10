@@ -11,6 +11,14 @@ from src.chuncking import Chunk
 from src.search_file import take_all_files_paths
 
 
+STOP_WORDS = {
+    "a", "an", "the", "is", "are", "was", "were", "be", "been", "do", "does",
+    "did", "how", "what", "which", "where", "when", "why", "who", "can",
+    "could", "should", "would", "to", "of", "in", "on", "for", "with", "and",
+    "or", "it", "this", "that", "i", "my", "me", "you", "your", "use",
+}
+
+
 def tokenize(text: str) -> list[str]:
     tokens: list[str] = []
     for word in re.findall(r"[A-Za-z_][A-Za-z0-9_]*|\d+", text):
@@ -19,7 +27,7 @@ def tokenize(text: str) -> list[str]:
                            word.replace("_", " "))
         if len(parts) > 1:
             tokens.extend(p.lower() for p in parts)
-    return tokens
+    return [t for t in tokens if t not in STOP_WORDS]
 
 
 def index(max_chunk_size: int = 2000,
