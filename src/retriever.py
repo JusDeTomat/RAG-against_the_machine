@@ -47,6 +47,8 @@ def search(query: str, k: int = 10,
     except (OSError, json.JSONDecodeError, pickle.UnpicklingError) as e:
         print(f"Error: cannot load the index ({e}). Run 'index' first.")
         return
+    print("\nSource:")
     for s in retriever.search(str(query), k):
         print(f"{s.file_path} "
               f"[{s.first_character_index}:{s.last_character_index}]")
+    print()
