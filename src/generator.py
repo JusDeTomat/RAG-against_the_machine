@@ -1,6 +1,7 @@
 import json
 import pickle
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm
 
@@ -31,8 +32,8 @@ class Generator:
                  max_new_tokens: int = 256) -> None:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        self.tokenizer: Any = AutoTokenizer.from_pretrained(model_name)
+        self.model: Any = AutoModelForCausalLM.from_pretrained(model_name)
         self.model.eval()
         self.max_context_tokens = max_context_tokens
         self.max_new_tokens = max_new_tokens
@@ -58,7 +59,7 @@ class Generator:
                 continue
             ids = self.tokenizer.encode(text)
             if len(ids) > budget:
-                text = self.tokenizer.decode(ids[:budget])
+                text = str(self.tokenizer.decode(ids[:budget]))
             parts.append(f"[{source.file_path}]\n{text}")
             budget -= min(len(ids), budget)
             if budget <= 0:
