@@ -1,4 +1,6 @@
 .venv/
 datasets_public/
-moulinette/
+moulinette_dir/
 data/
+exams/
+note.md
