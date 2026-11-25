@@ -24,7 +24,6 @@ clean:
 	rm -rf __pycache__ .mypy_cache .pytest_cache
 	rm -rf data/processed
 	rm -rf data/output
-	rm -rf uv.lock
 
 fclean: clean
 	rm -rf .venv
